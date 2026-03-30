@@ -330,6 +330,60 @@ RETURN
 <br>
 
 ```DAX
+percentual_variacao_faturamento_loja_ecommerce = 
+
+-- Medida:
+--      percentual_variacao_faturamento_loja_ecommerce
+--
+-- Descrição:
+--      Calcula a variação percentual do faturamento entre os canais Loja e e-Commerce,
+--      utilizando o faturamento da Loja como base de comparação.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Subtrai o faturamento do e-Commerce do faturamento da Loja e divide pelo faturamento da Loja,
+--      resultando na variação percentual relativa ao canal Loja.
+--
+--      Interpretação:
+--
+--          Valor positivo:
+--              Loja possui faturamento superior ao e-Commerce
+--
+--          Valor negativo:
+--              e-Commerce possui faturamento superior à Loja
+--
+--          Valor próximo de zero:
+--              Canais com desempenho semelhante
+--
+-- Dependências:
+--      [faturamento_loja]
+--      [faturamento_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando a variação percentual entre os canais (entre -∞ e +∞).
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--
+--      O resultado pode ser formatado como percentual para melhor interpretação.
+--
+--      Importante: a escolha do canal Loja como base influencia a interpretação da métrica.
+--      Caso necessário, pode-se criar uma variação invertida utilizando o e-Commerce como base.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_loja] - [faturamento_ecommerce],
+        [faturamento_loja]
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
 formato_variacao_faturamento_mm = 
 
 -- Medida:
@@ -572,59 +626,6 @@ RETURN
     _Resultado
 ```
 <br>
-
-```DAX
-percentual_variacao_faturamento_loja_ecommerce = 
-
--- Medida:
---      percentual_variacao_faturamento_loja_ecommerce
---
--- Descrição:
---      Calcula a variação percentual do faturamento entre os canais Loja e e-Commerce,
---      utilizando o faturamento da Loja como base de comparação.
---
--- Tabela origem:
---      Medida calculada (baseada em fVendas e dimensao_canais)
---
--- Regra de negócio:
---      Subtrai o faturamento do e-Commerce do faturamento da Loja e divide pelo faturamento da Loja,
---      resultando na variação percentual relativa ao canal Loja.
---
---      Interpretação:
---
---          Valor positivo:
---              Loja possui faturamento superior ao e-Commerce
---
---          Valor negativo:
---              e-Commerce possui faturamento superior à Loja
---
---          Valor próximo de zero:
---              Canais com desempenho semelhante
---
--- Dependências:
---      [faturamento_loja]
---      [faturamento_ecommerce]
---
--- Retorno:
---      Valor numérico representando a variação percentual entre os canais (entre -∞ e +∞).
---
--- Observação:
---      A função DIVIDE é utilizada para evitar erros de divisão por zero.
---
---      O resultado pode ser formatado como percentual para melhor interpretação.
---
---      Importante: a escolha do canal Loja como base influencia a interpretação da métrica.
---      Caso necessário, pode-se criar uma variação invertida utilizando o e-Commerce como base.
-
-VAR _Resultado =
-    DIVIDE(
-        [faturamento_loja] - [faturamento_ecommerce],
-        [faturamento_loja]
-    )
-
-RETURN
-    _Resultado
-```
 
 ## Medidas de Devolução (Percentual)
 <br>
