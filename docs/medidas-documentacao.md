@@ -133,48 +133,6 @@ RETURN
 <br>
 
 ```DAX
-faturamento_ecommerce = 
-
--- Medida:
---      faturamento_ecommerce
---
--- Descrição:
---      Calcula o faturamento total proveniente do canal de vendas e-Commerce,
---      respeitando o contexto de filtros do relatório.
---
--- Tabela origem:
---      Medida calculada (baseada em fVendas e dimensao_canais)
---
--- Regra de negócio:
---      Filtra o faturamento total considerando apenas as vendas realizadas
---      no canal "e-Commerce".
---
--- Dependências:
---      [faturamento_total]
---      dimensao_canais[canal]
---
--- Retorno:
---      Valor numérico representando o faturamento do canal e-Commerce no contexto filtrado.
---
--- Observação:
---      A função CALCULATE altera o contexto de filtro para considerar apenas o canal e-Commerce.
---      COALESCE é utilizado para garantir retorno 0 quando o resultado for BLANK().
-
-VAR _Resultado =
-    CALCULATE(
-        [faturamento_total],
-        dimensao_canais[canal] = "e-Commerce"
-    )
-
-RETURN
-    COALESCE(
-        _Resultado,
-        0
-    )
-```
-<br>
-
-```DAX
 faturamento_loja = 
 
 -- Medida:
@@ -206,6 +164,48 @@ VAR _Resultado =
     CALCULATE(
         [faturamento_total],
         dimensao_canais[canal] = "Loja"
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+faturamento_ecommerce = 
+
+-- Medida:
+--      faturamento_ecommerce
+--
+-- Descrição:
+--      Calcula o faturamento total proveniente do canal de vendas e-Commerce,
+--      respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Filtra o faturamento total considerando apenas as vendas realizadas
+--      no canal "e-Commerce".
+--
+-- Dependências:
+--      [faturamento_total]
+--      dimensao_canais[canal]
+--
+-- Retorno:
+--      Valor numérico representando o faturamento do canal e-Commerce no contexto filtrado.
+--
+-- Observação:
+--      A função CALCULATE altera o contexto de filtro para considerar apenas o canal e-Commerce.
+--      COALESCE é utilizado para garantir retorno 0 quando o resultado for BLANK().
+
+VAR _Resultado =
+    CALCULATE(
+        [faturamento_total],
+        dimensao_canais[canal] = "e-Commerce"
     )
 
 RETURN
