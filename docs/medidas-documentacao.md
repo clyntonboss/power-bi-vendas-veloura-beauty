@@ -630,9 +630,460 @@ RETURN
 <br>
 
 ```DAX
+transacoes_total = 
 
+-- Medida:
+--      transacoes_total
+--
+-- Descrição:
+--      Calcula o total de transações registradas, considerando cada nota fiscal como uma transação única.
+--
+-- Tabela origem:
+--      fato_vendas
+--
+-- Regra de negócio:
+--      - Conta as notas fiscais distintas para determinar o número total de transações no período ou contexto filtrado.
+--      - Retorna 0 caso não haja transações para evitar BLANK().
+--
+-- Dependências:
+--      fato_vendas[nota_fiscal]
+--
+-- Retorno:
+--      Valor numérico representando o total de transações distintas no contexto filtrado.
+--
+-- Observação:
+--      COALESCE garante que, se não houver transações registradas, o retorno será 0 ao invés de BLANK().
+
+VAR _Resultado =
+    DISTINCTCOUNT(
+        fato_vendas[nota_fiscal]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
 ```
 <br>
+
+```DAX
+transacoes_loja = 
+
+-- Medida:
+--      transacoes_loja
+--
+-- Descrição:
+--      Calcula o total de transações realizadas pelo canal Loja no período ou contexto filtrado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_total] e [dimensao_canais])
+--
+-- Regra de negócio:
+--      - Filtra as transações pelo canal "Loja".
+--      - Retorna 0 caso não haja transações para evitar BLANK().
+--
+-- Dependências:
+--      [transacoes_total]
+--      dimensao_canais[canal]
+--
+-- Retorno:
+--      Valor numérico representando o total de transações via canal Loja no contexto filtrado.
+--
+-- Observação:
+--      COALESCE garante que, se não houver transações registradas, o retorno será 0 ao invés de BLANK().
+
+VAR _Resultado =
+    CALCULATE(
+        [transacoes_total],
+        dimensao_canais[canal]="Loja"
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+transacoes_ecommerce = 
+
+-- Medida:
+--      transacoes_ecommerce
+--
+-- Descrição:
+--      Calcula o total de transações realizadas pelo canal e-Commerce no período ou contexto filtrado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_total] e [dimensao_canais])
+--
+-- Regra de negócio:
+--      - Filtra as transações pelo canal "e-Commerce".
+--      - Retorna 0 caso não haja transações para evitar BLANK().
+--
+-- Dependências:
+--      [transacoes_total]
+--      dimensao_canais[canal]
+--
+-- Retorno:
+--      Valor numérico representando o total de transações via canal e-Commerce no contexto filtrado.
+--
+-- Observação:
+--      COALESCE garante que, se não houver transações registradas, o retorno será 0 ao invés de BLANK().
+
+VAR _Resultado =
+    CALCULATE(
+        [transacoes_total],
+        dimensao_canais[canal]="e-Commerce"
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+maior_menor_transacoes_loja = 
+
+-- Medida:
+--      maior_menor_transacoes_loja
+--
+-- Descrição:
+--      Retorna a maior ou menor quantidade de transações realizadas via canal Loja
+--      no período selecionado, destacando os extremos de desempenho.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_loja] e dimensao_calendario)
+--
+-- Regra de negócio:
+--      - Calcula o valor mínimo e máximo de transações Loja no contexto filtrado.
+--      - Retorna apenas os valores que correspondem ao menor ou maior número de transações.
+--
+-- Dependências:
+--      [transacoes_loja]
+--      dimensao_calendario[mes_abreviado], dimensao_calendario[mes_numero]
+--
+-- Retorno:
+--      Valor numérico representando a quantidade de transações extrema (menor ou maior) do canal Loja.
+--
+-- Observação:
+--      Útil para análise de picos e quedas de transações Loja em dashboards,
+--      permitindo comparações rápidas entre períodos.
+
+VAR _MenorTransacao =
+    MINX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [transacoes_loja]
+    )
+
+VAR _MaiorTransacao =
+    MAXX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [transacoes_loja]
+    )
+
+RETURN
+    IF(
+        [transacoes_loja] = _MaiorTransacao
+        || [transacoes_loja] = _MenorTransacao,
+        [transacoes_loja]
+    )
+```
+<br>
+
+```DAX
+maior_menor_transacoes_ecommerce = 
+
+-- Medida:
+--      maior_menor_transacoes_ecommerce
+--
+-- Descrição:
+--      Retorna a maior ou menor quantidade de transações realizadas via canal e-Commerce
+--      no período selecionado, destacando os extremos de desempenho.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_ecommerce] e dimensao_calendario)
+--
+-- Regra de negócio:
+--      - Calcula o valor mínimo e máximo de transações e-Commerce no contexto filtrado.
+--      - Retorna apenas os valores que correspondem ao menor ou maior número de transações.
+--
+-- Dependências:
+--      [transacoes_ecommerce]
+--      dimensao_calendario[mes_abreviado], dimensao_calendario[mes_numero]
+--
+-- Retorno:
+--      Valor numérico representando a quantidade de transações extrema (menor ou maior) do canal e-Commerce.
+--
+-- Observação:
+--      Útil para análise de picos e quedas de transações e-Commerce em dashboards,
+--      permitindo comparações rápidas entre períodos.
+
+VAR _MenorTransacao =
+    MINX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [transacoes_ecommerce]
+    )
+
+VAR _MaiorTransacao =
+    MAXX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [transacoes_ecommerce]
+    )
+
+RETURN
+    IF(
+        [transacoes_ecommerce] = _MaiorTransacao
+        || [transacoes_ecommerce] = _MenorTransacao,
+        [transacoes_ecommerce]
+    )
+```
+<br>
+
+```DAX
+percentual_transacoes_loja = 
+
+-- Medida:
+--      percentual_transacoes_loja
+--
+-- Descrição:
+--      Calcula a proporção de transações realizadas via canal Loja em relação ao total de transações,
+--      permitindo analisar a representatividade do canal no período selecionado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_loja] e [transacoes_total])
+--
+-- Regra de negócio:
+--      - Divide o total de transações Loja pelo total de transações no contexto filtrado.
+--      - Retorna 0 caso não haja transações para evitar BLANK().
+--
+-- Dependências:
+--      [transacoes_loja]
+--      [transacoes_total]
+--
+-- Retorno:
+--      Valor numérico representando o percentual de transações via Loja no período selecionado.
+--
+-- Observação:
+--      COALESCE garante que, se não houver transações registradas, o retorno será 0 ao invés de BLANK().
+
+VAR _TransacoesTotal =
+    [transacoes_total]
+
+VAR _Transacoes_Loja =
+    [transacoes_loja]
+
+VAR _Resultado =
+    DIVIDE(
+        _Transacoes_Loja,
+        _TransacoesTotal
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+percentual_transacoes_ecommerce = 
+
+-- Medida:
+--      percentual_transacoes_ecommerce
+--
+-- Descrição:
+--      Calcula a proporção de transações realizadas via canal e-Commerce em relação ao total de transações,
+--      permitindo analisar a representatividade do canal no período selecionado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_ecommerce] e [transacoes_total])
+--
+-- Regra de negócio:
+--      - Divide o total de transações e-Commerce pelo total de transações no contexto filtrado.
+--      - Retorna 0 caso não haja transações para evitar BLANK().
+--
+-- Dependências:
+--      [transacoes_ecommerce]
+--      [transacoes_total]
+--
+-- Retorno:
+--      Valor numérico representando o percentual de transações via e-Commerce no período selecionado.
+--
+-- Observação:
+--      COALESCE garante que, se não houver transações registradas, o retorno será 0 ao invés de BLANK().
+
+VAR _TransacoesTotal =
+    [transacoes_total]
+
+VAR _Transacoes_Ecommerce =
+    [transacoes_ecommerce]
+
+VAR _Resultado =
+    DIVIDE(
+        _Transacoes_Ecommerce,
+        _TransacoesTotal
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+percentual_variacao_transacoes_loja_ecommerce = 
+
+-- Medida:
+--      percentual_variacao_transacoes_loja_ecommerce
+--
+-- Descrição:
+--      Calcula a variação percentual entre o número de transações realizadas pelo canal Loja
+--      em relação ao canal e-Commerce, permitindo analisar diferenças de desempenho entre canais.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [transacoes_loja] e [transacoes_ecommerce])
+--
+-- Regra de negócio:
+--      - Subtrai o total de transações e-Commerce do total de transações Loja.
+--      - Divide o resultado pelo total de transações Loja para obter a variação percentual.
+--
+-- Dependências:
+--      [transacoes_loja]
+--      [transacoes_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando a variação percentual de transações entre Loja e e-Commerce.
+--
+-- Observação:
+--      Pode resultar em valores positivos ou negativos, indicando se o canal Loja teve mais ou menos transações
+--      comparado ao canal e-Commerce.
+
+VAR _Resultado =
+    DIVIDE(
+        [transacoes_loja]-[transacoes_ecommerce],
+        [transacoes_loja]
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+maior_menor_percentual_variacao_transacoes_loja_ecommerce = 
+
+-- Medida:
+--      maior_menor_percentual_variacao_transacoes_loja_ecommerce
+--
+-- Descrição:
+--      Retorna o maior ou menor percentual de variação das transações entre os canais Loja e e-Commerce
+--      no período selecionado, facilitando a identificação dos extremos de desempenho.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [percentual_variacao_transacoes_loja_ecommerce] e dimensao_calendario)
+--
+-- Regra de negócio:
+--      - Calcula o valor mínimo e máximo de variação percentual de transações no contexto filtrado.
+--      - Retorna apenas o valor que corresponde ao menor ou maior percentual.
+--
+-- Dependências:
+--      [percentual_variacao_transacoes_loja_ecommerce]
+--      dimensao_calendario[mes_abreviado], dimensao_calendario[mes_numero]
+--
+-- Retorno:
+--      Valor numérico representando o percentual de variação da transação que é extremo (menor ou maior) no contexto filtrado.
+--
+-- Observação:
+--      Útil para destacar visualmente picos e quedas nas transações entre canais
+--      em gráficos ou cartões de análise comparativa.
+--
+--      A função IF garante que apenas os valores máximos e mínimos sejam retornados.
+
+VAR _MenorTransacao =
+    MINX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [percentual_variacao_transacoes_loja_ecommerce]
+    )
+
+VAR _MaiorTransacao =
+    MAXX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [percentual_variacao_transacoes_loja_ecommerce]
+    )
+
+RETURN
+    IF(
+        [percentual_variacao_transacoes_loja_ecommerce] = _MaiorTransacao
+        || [percentual_variacao_transacoes_loja_ecommerce] = _MenorTransacao,
+        [percentual_variacao_transacoes_loja_ecommerce]
+    )
+```
+<br>
+
+```DAX
+formato_variacao_transacoes = 
+
+-- Medida:
+--      formato_variacao_transacoes
+--
+-- Descrição:
+--      Formata o percentual de variação das transações entre os canais Loja e e-Commerce,
+--      exibindo os valores com símbolos de aumento (▲) e redução (▼) para facilitar a interpretação visual.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [maior_menor_percentual_variacao_transacoes_loja_ecommerce])
+--
+-- Regra de negócio:
+--      Aplica a função FORMAT ao valor da variação percentual, transformando o número em string
+--      no formato “▲ 0.00%; ▼ 0.00%”.
+--
+-- Dependências:
+--      [maior_menor_percentual_variacao_transacoes_loja_ecommerce]
+--
+-- Retorno:
+--      Valor formatado em string representando a variação percentual entre os canais.
+--
+-- Observação:
+--      Útil para exibição em dashboards e relatórios, facilitando a rápida identificação
+--      de tendências de aumento ou queda nas transações.
+--
+--      O formato escolhido mantém consistência com outras medidas de variação (faturamento, produtos vendidos).
+
+VAR _Resultado =
+    FORMAT(
+        [maior_menor_percentual_variacao_transacoes_loja_ecommerce], "▲ 0.00%; ▼ 0.00%"
+    )
+
+RETURN
+    _Resultado
+```
 
 ## Medidas de Produtos Vendidos
 <br>
@@ -1027,7 +1478,6 @@ VAR _Resultado =
 RETURN
     _Resultado
 ```
-<br>
 
 ## Medidas de Ticket Médio
 <br>
@@ -1636,7 +2086,6 @@ RETURN
         0
     )
 ```
-<br>
 
 ## Medidas de Classificação
 <br>
