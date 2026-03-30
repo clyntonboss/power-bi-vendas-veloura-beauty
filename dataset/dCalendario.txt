@@ -1,0 +1,85 @@
+```m
+let
+    // 🔹 Referência à fato (ajuste o nome se necessário)
+    Fonte = fato_vendas,
+
+    // 🔹 Garantir tipo data
+    TipoCorrigido = Table.TransformColumnTypes(Fonte, {{"Data da Venda", type date}}),
+
+    // 🔹 Captura dinâmica de datas
+    MenorData = Date.StartOfYear(List.Min(TipoCorrigido[Data da Venda])),
+    MaiorData = Date.EndOfYear(List.Max(TipoCorrigido[Data da Venda])),
+
+    // 🔹 Geração do intervalo
+    Dias = Duration.Days(MaiorData - MenorData) + 1,
+    ListarDatas = List.Dates(MenorData, Dias, #duration(1,0,0,0)),
+
+    // 🔹 Criação da tabela
+    Tabela = #table(
+        type table[
+            data = date,
+            dia = Int64.Type,
+            ano = Int64.Type,
+            nome_mes = text,
+            mes_abreviado = text,
+            mes_numero = Int64.Type,
+            ano_mes = Int64.Type,
+            mes_ano = text,
+            trimestre = Int64.Type,
+            trimestre_abreviado = text,
+            bimestre = text,
+            semestre = text,
+            semana_mes = Int64.Type,
+            semana_ano = Int64.Type,
+            dia_semana = Int64.Type,
+            nome_dia = text,
+            dia_util_tf = Logical.Type,
+            dia_atual_tf = Logical.Type,
+            mes_atual_tf = Logical.Type,
+            ano_atual_tf = Logical.Type
+        ],
+
+        List.Transform(
+            ListarDatas,
+            each
+                let
+                    DataAtual = _,
+                    Ano = Date.Year(DataAtual),
+                    Mes = Date.Month(DataAtual),
+                    DiaSemana = Date.DayOfWeek(DataAtual, Day.Monday) + 1
+                in
+                {
+                    DataAtual,
+                    Date.Day(DataAtual),
+                    Ano,
+
+                    Text.Proper(Date.MonthName(DataAtual)),
+                    Text.Proper(Text.Start(Date.MonthName(DataAtual), 3)),
+                    Mes,
+
+                    Ano * 100 + Mes,
+                    Text.Proper(Text.Start(Date.MonthName(DataAtual), 3)) & "-" & Text.End(Text.From(Ano), 2),
+
+                    Date.QuarterOfYear(DataAtual),
+                    "Q" & Text.From(Date.QuarterOfYear(DataAtual)),
+
+                    Text.From(Number.RoundUp(Mes / 2)) & "º Bim",
+                    Text.From(Number.RoundUp(Mes / 6)) & "º Sem",
+
+                    Date.WeekOfMonth(DataAtual),
+                    Date.WeekOfYear(DataAtual),
+
+                    DiaSemana,
+                    Date.DayOfWeekName(DataAtual),
+
+                    DiaSemana <= 5,
+
+                    Date.IsInCurrentDay(DataAtual),
+                    Date.IsInCurrentMonth(DataAtual),
+                    Date.IsInCurrentYear(DataAtual)
+                }
+        )
+    )
+in
+    Tabela
+```
