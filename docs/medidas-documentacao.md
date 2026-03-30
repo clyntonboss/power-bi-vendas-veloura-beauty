@@ -2091,6 +2091,817 @@ RETURN
 <br>
 
 ```DAX
+media_faturamento_produto = 
 
+-- Medida:
+--      media_faturamento_produto
+--
+-- Descrição:
+--      Calcula a média de faturamento por produto, considerando o desempenho médio entre
+--      todos os produtos disponíveis no modelo, independentemente de filtros aplicados.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_produtos)
+--
+-- Regra de negócio:
+--      A média é calculada a partir do faturamento total de cada produto distinto, garantindo que
+--      cada produto contribua igualmente para o resultado final (média de faturamento por produto).
+--
+--      O cálculo ignora filtros aplicados na dimensão de produtos, permitindo uma referência global
+--      para comparação com o desempenho individual de cada item.
+--
+-- Dependências:
+--      [faturamento_total]
+--      dimensao_produtos[nome_produto]
+--
+-- Retorno:
+--      Valor numérico representando a média de faturamento entre os produtos.
+--
+-- Observação:
+--      A função VALUES garante a avaliação no contexto dos produtos distintos.
+--      O uso de AVERAGEX permite iterar sobre os produtos e calcular a média do faturamento total.
+--      REMOVEFILTERS é aplicado para desconsiderar filtros de produto e garantir uma média global consistente.
+
+VAR _Resultado =
+    CALCULATE(
+        AVERAGEX(
+            VALUES(
+                dimensao_produtos[nome_produto]
+            ),
+            [faturamento_total]
+        ),
+        REMOVEFILTERS(
+            dimensao_produtos[nome_produto]
+        )
+    )
+
+RETURN
+    _Resultado
 ```
 <br>
+
+```DAX
+media_faturamento_vendedor = 
+
+-- Medida:
+--      media_faturamento_vendedor
+--
+-- Descrição:
+--      Calcula a média de faturamento por vendedor, considerando o desempenho médio entre
+--      todos os vendedores disponíveis no modelo, independentemente de filtros aplicados.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_vendedores)
+--
+-- Regra de negócio:
+--      A média é calculada a partir do faturamento total de cada vendedor distinto, garantindo que
+--      cada vendedor contribua igualmente para o resultado final (média de faturamento por vendedor).
+--
+--      O cálculo ignora filtros aplicados na dimensão de vendedores, permitindo uma referência global
+--      para comparação com o desempenho individual de cada vendedor.
+--
+-- Dependências:
+--      [faturamento_total]
+--      dimensao_vendedores[nome_vendedor]
+--
+-- Retorno:
+--      Valor numérico representando a média de faturamento entre os vendedores.
+--
+-- Observação:
+--      A função VALUES garante a avaliação no contexto dos vendedores distintos.
+--      O uso de AVERAGEX permite iterar sobre os vendedores e calcular a média do faturamento total.
+--      REMOVEFILTERS é aplicado para desconsiderar filtros de vendedor e garantir uma média global consistente.
+
+VAR _Resultado =
+    CALCULATE(
+        AVERAGEX(
+            VALUES(
+                dimensao_vendedores[nome_vendedor]
+            ),
+            [faturamento_total]
+        ),
+        REMOVEFILTERS(
+            dimensao_vendedores[nome_vendedor]
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+media_faturamento_localidade = 
+
+-- Medida:
+--      media_faturamento_localidade
+--
+-- Descrição:
+--      Calcula a média de faturamento por localidade (UF), considerando o desempenho médio entre
+--      todas as localidades disponíveis no modelo, independentemente de filtros de estado aplicados.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas, dimensao_vendedores e dimensao_estados_brasileiros)
+--
+-- Regra de negócio:
+--      A média é calculada a partir do faturamento total de cada UF distinta, garantindo que cada
+--      localidade contribua igualmente para o resultado final (média de médias por UF).
+--
+--      O cálculo ignora filtros aplicados na dimensão de estados, permitindo uma referência global
+--      para comparação com o desempenho individual de cada localidade.
+--
+-- Dependências:
+--      [faturamento_total]
+--      dimensao_vendedores[uf]
+--      dimensao_estados_brasileiros[nome_estado]
+--
+-- Retorno:
+--      Valor numérico representando a média de faturamento entre as localidades (UFs).
+--
+-- Observação:
+--      A função DISTINCT garante que cada UF seja considerada apenas uma vez no cálculo.
+--      O uso de AVERAGEX permite iterar sobre as UFs e calcular a média do faturamento total.
+--      REMOVEFILTERS é aplicado para desconsiderar filtros de estado e garantir uma média global consistente.
+
+VAR _Resultado =
+    CALCULATE(
+        AVERAGEX(
+            DISTINCT(
+                dimensao_vendedores[uf]
+            ),
+            [faturamento_total]
+        ),
+        REMOVEFILTERS(
+            dimensao_estados_brasileiros[nome_estado]
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+media_quantidade_produtos_vedidos_produto = 
+
+-- Medida:
+--      media_quantidade_produtos_vedidos_produto
+--
+-- Descrição:
+--      Calcula a média da quantidade de produtos vendidos por produto, considerando o desempenho médio
+--      entre todos os produtos disponíveis no modelo, independentemente de filtros aplicados.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_produtos)
+--
+-- Regra de negócio:
+--      A média é calculada a partir da quantidade total de produtos vendidos por produto distinto,
+--      garantindo que cada produto contribua igualmente para o resultado final
+--      (média de quantidade vendida por produto).
+--
+--      O cálculo ignora filtros aplicados na dimensão de produtos, permitindo uma referência global
+--      para comparação com o desempenho individual de cada item.
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      dimensao_produtos[nome_produto]
+--
+-- Retorno:
+--      Valor numérico representando a média de quantidade de produtos vendidos entre os produtos.
+--
+-- Observação:
+--      A função VALUES garante a avaliação no contexto dos produtos distintos.
+--      O uso de AVERAGEX permite iterar sobre os produtos e calcular a média da quantidade vendida.
+--      REMOVEFILTERS é aplicado para desconsiderar filtros de produto e garantir uma média global consistente.
+
+VAR _Resultado =
+    CALCULATE(
+        AVERAGEX(
+            VALUES(
+                dimensao_produtos[nome_produto]
+            ),
+            [quantidade_produtos_vendidos_total]
+        ),
+        REMOVEFILTERS(
+            dimensao_produtos[nome_produto]
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+media_quantidade_produtos_vedidos_vendedor = 
+
+-- Medida:
+--      media_quantidade_produtos_vedidos_vendedor
+--
+-- Descrição:
+--      Calcula a média da quantidade de produtos vendidos por vendedor, considerando o desempenho médio
+--      entre todos os vendedores disponíveis no modelo, independentemente de filtros aplicados.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_vendedores)
+--
+-- Regra de negócio:
+--      A média é calculada a partir da quantidade total de produtos vendidos por vendedor distinto,
+--      garantindo que cada vendedor contribua igualmente para o resultado final
+--      (média de quantidade vendida por vendedor).
+--
+--      O cálculo ignora filtros aplicados na dimensão de vendedores, permitindo uma referência global
+--      para comparação com o desempenho individual de cada vendedor.
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      dimensao_vendedores[nome_vendedor]
+--
+-- Retorno:
+--      Valor numérico representando a média de quantidade de produtos vendidos entre os vendedores.
+--
+-- Observação:
+--      A função VALUES garante a avaliação no contexto dos vendedores distintos.
+--      O uso de AVERAGEX permite iterar sobre os vendedores e calcular a média da quantidade vendida.
+--      REMOVEFILTERS é aplicado para desconsiderar filtros de vendedor e garantir uma média global consistente.
+
+VAR _Resultado =
+    CALCULATE(
+        AVERAGEX(
+            VALUES(
+                dimensao_vendedores[nome_vendedor]
+            ),
+            [quantidade_produtos_vendidos_total]
+        ),
+        REMOVEFILTERS(
+            dimensao_vendedores[nome_vendedor]
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+media_quantidade_produtos_vedidos_localidade = 
+
+-- Medida:
+--      media_quantidade_produtos_vedidos_localidade
+--
+-- Descrição:
+--      Calcula a média da quantidade de produtos vendidos por localidade (UF),
+--      considerando o desempenho médio entre todas as localidades disponíveis no modelo.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas, dimensao_vendedores e dimensao_estados_brasileiros)
+--
+-- Regra de negócio:
+--      A média é calculada a partir da quantidade total de produtos vendidos em cada UF distinta,
+--      garantindo que cada localidade contribua igualmente para o resultado final
+--      (média de quantidade vendida por UF).
+--
+--      O cálculo ignora filtros aplicados na dimensão de estados, permitindo uma referência global
+--      para comparação com o desempenho individual de cada localidade.
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      dimensao_vendedores[uf]
+--      dimensao_estados_brasileiros[nome_estado]
+--
+-- Retorno:
+--      Valor numérico representando a média de quantidade de produtos vendidos entre as localidades.
+--
+-- Observação:
+--      A função DISTINCT garante que cada UF seja considerada apenas uma vez no cálculo.
+--      O uso de AVERAGEX permite iterar sobre as UFs e calcular a média da quantidade vendida.
+--      REMOVEFILTERS é aplicado para desconsiderar filtros de estado e garantir uma média global consistente.
+
+VAR _Resultado =
+    CALCULATE(
+        AVERAGEX(
+            DISTINCT(
+                dimensao_vendedores[uf]
+            ),
+            [quantidade_produtos_vendidos_total]
+        ),
+        REMOVEFILTERS(
+            dimensao_estados_brasileiros[nome_estado]
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+classificacao_produto = 
+
+-- Medida:
+--      classificacao_produto
+--
+-- Descrição:
+--      Classifica os produtos com base no desempenho de faturamento e quantidade vendida,
+--      utilizando como referência as médias dessas métricas no contexto analisado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e tabelas relacionadas)
+--
+-- Regra de negócio:
+--      Compara o faturamento e a quantidade de produtos vendidos de cada produto com suas respectivas médias,
+--      classificando em quatro categorias estratégicas:
+--
+--          ⭐ Estrela:
+--              Faturamento acima da média e quantidade acima da média
+--
+--          🐄 Vaca Leiteira:
+--              Faturamento acima da média e quantidade abaixo da média
+--
+--          ❓ Interrogação:
+--              Faturamento abaixo da média e quantidade acima da média
+--
+--          🍍 Abacaxi:
+--              Faturamento abaixo da média e quantidade abaixo da média
+--
+-- Dependências:
+--      [faturamento_total]
+--      [quantidade_produtos_vendidos_total]
+--      [media_faturamento_produto]
+--      [media_quantidade_produtos_vedidos_produto]
+--
+-- Retorno:
+--      Texto representando a classificação estratégica do produto no contexto filtrado.
+--
+-- Observação:
+--      A lógica utiliza SWITCH(TRUE()) para avaliação condicional sequencial.
+--      Caso nenhuma condição seja atendida, retorna BLANK().
+
+VAR _Faturamento =
+    [faturamento_total]
+
+VAR _QuantidadeProdutosVendidos =
+    [quantidade_produtos_vendidos_total]
+
+VAR _MediaFaturamento =
+    [media_faturamento_produto]
+
+VAR _MediaQuantidadeProdutosVendidos =
+    [media_quantidade_produtos_vedidos_produto]
+
+RETURN
+    SWITCH(
+        TRUE(),
+
+        _QuantidadeProdutosVendidos >= _MediaQuantidadeProdutosVendidos && _Faturamento >= _MediaFaturamento, "⭐ Estrela (↑Faturamento ↑Quantidade)",
+        _QuantidadeProdutosVendidos < _MediaQuantidadeProdutosVendidos && _Faturamento >= _MediaFaturamento, "🐄 Vaca Leiteira (↑Faturamento ↓Quantidade)",
+        _QuantidadeProdutosVendidos >= _MediaQuantidadeProdutosVendidos && _Faturamento < _MediaFaturamento, "❓ Interrogação (↓Faturamento ↑Quantidade)",
+        _QuantidadeProdutosVendidos < _MediaQuantidadeProdutosVendidos && _Faturamento < _MediaFaturamento, "🍍 Abacaxi (↓Faturamento ↓Quantidade)",
+        BLANK()
+    )
+```
+<br>
+
+```DAX
+classificacao_vendedor = 
+
+-- Medida:
+--      classificacao_vendedor
+--
+-- Descrição:
+--      Classifica os vendedores com base no desempenho de faturamento e quantidade de produtos vendidos,
+--      utilizando como referência as médias dessas métricas no contexto analisado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e tabelas relacionadas)
+--
+-- Regra de negócio:
+--      Compara o faturamento e a quantidade de produtos vendidos de cada vendedor com suas respectivas médias,
+--      classificando em quatro categorias estratégicas:
+--
+--          ⭐ Estrela:
+--              Faturamento acima da média e quantidade acima da média
+--
+--          🐄 Vaca Leiteira:
+--              Faturamento acima da média e quantidade abaixo da média
+--
+--          ❓ Interrogação:
+--              Faturamento abaixo da média e quantidade acima da média
+--
+--          🍍 Abacaxi:
+--              Faturamento abaixo da média e quantidade abaixo da média
+--
+-- Dependências:
+--      [faturamento_total]
+--      [quantidade_produtos_vendidos_total]
+--      [media_faturamento_vendedor]
+--      [media_quantidade_produtos_vedidos_vendedor]
+--
+-- Retorno:
+--      Texto representando a classificação estratégica do vendedor no contexto filtrado.
+--
+-- Observação:
+--      A lógica utiliza SWITCH(TRUE()) para avaliação condicional sequencial.
+--      Caso nenhuma condição seja atendida, retorna BLANK().
+
+VAR _Faturamento =
+    [faturamento_total]
+
+VAR _QuantidadeProdutosVendidos =
+    [quantidade_produtos_vendidos_total]
+
+VAR _MediaFaturamento =
+    [media_faturamento_vendedor]
+
+VAR _MediaQuantidadeProdutosVendidos =
+    [media_quantidade_produtos_vedidos_vendedor]
+
+RETURN
+    SWITCH(
+        TRUE(),
+
+        _QuantidadeProdutosVendidos >= _MediaQuantidadeProdutosVendidos && _Faturamento >= _MediaFaturamento, "⭐ Estrela (↑Faturamento ↑Quantidade)",
+        _QuantidadeProdutosVendidos < _MediaQuantidadeProdutosVendidos && _Faturamento >= _MediaFaturamento, "🐄 Vaca Leiteira (↑Faturamento ↓Quantidade)",
+        _QuantidadeProdutosVendidos >= _MediaQuantidadeProdutosVendidos && _Faturamento < _MediaFaturamento, "❓ Interrogação (↓Faturamento ↑Quantidade)",
+        _QuantidadeProdutosVendidos < _MediaQuantidadeProdutosVendidos && _Faturamento < _MediaFaturamento, "🍍 Abacaxi (↓Faturamento ↓Quantidade)",
+        BLANK()
+    )
+```
+<br>
+
+```DAX
+classificacao_localidade = 
+
+-- Medida:
+--      classificacao_localidade
+--
+-- Descrição:
+--      Classifica as localidades com base no desempenho de faturamento e quantidade de produtos vendidos,
+--      utilizando como referência as médias dessas métricas no contexto analisado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e tabelas relacionadas)
+--
+-- Regra de negócio:
+--      Compara o faturamento e a quantidade de produtos vendidos da localidade com suas respectivas médias,
+--      classificando em quatro categorias estratégicas:
+--
+--          ⭐ Estrela:
+--              Faturamento acima da média e quantidade acima da média
+--
+--          🐄 Vaca Leiteira:
+--              Faturamento acima da média e quantidade abaixo da média
+--
+--          ❓ Interrogação:
+--              Faturamento abaixo da média e quantidade acima da média
+--
+--          🍍 Abacaxi:
+--              Faturamento abaixo da média e quantidade abaixo da média
+--
+-- Dependências:
+--      [faturamento_total]
+--      [quantidade_produtos_vendidos_total]
+--      [media_faturamento_localidade]
+--      [media_quantidade_produtos_vedidos_localidade]
+--
+-- Retorno:
+--      Texto representando a classificação estratégica da localidade no contexto filtrado.
+--
+-- Observação:
+--      A lógica utiliza SWITCH(TRUE()) para avaliação condicional sequencial.
+--      Caso nenhuma condição seja atendida, retorna BLANK().
+
+VAR _Faturamento =
+    [faturamento_total]
+
+VAR _QuantidadeProdutosVendidos =
+    [quantidade_produtos_vendidos_total]
+
+VAR _MediaFaturamento =
+    [media_faturamento_localidade]
+
+VAR _MediaQuantidadeProdutosVendidos =
+    [media_quantidade_produtos_vedidos_localidade]
+
+RETURN
+    SWITCH(
+        TRUE(),
+
+        _QuantidadeProdutosVendidos >= _MediaQuantidadeProdutosVendidos && _Faturamento >= _MediaFaturamento, "⭐ Estrela (↑Faturamento ↑Quantidade)",
+        _QuantidadeProdutosVendidos < _MediaQuantidadeProdutosVendidos && _Faturamento >= _MediaFaturamento, "🐄 Vaca Leiteira (↑Faturamento ↓Quantidade)",
+        _QuantidadeProdutosVendidos >= _MediaQuantidadeProdutosVendidos && _Faturamento < _MediaFaturamento, "❓ Interrogação (↓Faturamento ↑Quantidade)",
+        _QuantidadeProdutosVendidos < _MediaQuantidadeProdutosVendidos && _Faturamento < _MediaFaturamento, "🍍 Abacaxi (↓Faturamento ↓Quantidade)",
+        BLANK()
+    )
+```
+<br>
+
+```DAX
+cores_classificacao_produtos = 
+
+-- Medida:
+--      cores_classificacao_produtos
+--
+-- Descrição:
+--      Define cores hexadecimais associadas a cada classificação de produto,
+--      permitindo a aplicação de formatação condicional em visuais do Power BI.
+--
+-- Tabela origem:
+--      Medida calculada (baseada na medida [classificacao_produto])
+--
+-- Regra de negócio:
+--      Atribui uma cor específica para cada categoria estratégica de produto:
+--
+--          ⭐ Estrela:
+--              Verde (#00C853)
+--
+--          🐄 Vaca Leiteira:
+--              Azul (#2962FF)
+--
+--          ❓ Interrogação:
+--              Laranja (#FF8F00)
+--
+--          🍍 Abacaxi:
+--              Vermelho (#D50000)
+--
+-- Dependências:
+--      [classificacao_produto]
+--
+-- Retorno:
+--      Código de cor em formato hexadecimal (texto), utilizado para formatação condicional.
+--
+-- Observação:
+--      Caso a classificação não corresponda a nenhuma das categorias definidas,
+--      o resultado será BLANK(), podendo impactar visuais que dependem de cor.
+
+SWITCH(
+    [classificacao_produto],
+
+    "⭐ Estrela (↑Faturamento ↑Quantidade)", "#00C853",
+    "🐄 Vaca Leiteira (↑Faturamento ↓Quantidade)", "#2962FF",
+    "❓ Interrogação (↓Faturamento ↑Quantidade)", "#FF8F00",
+    "🍍 Abacaxi (↓Faturamento ↓Quantidade)", "#D50000"
+
+)
+```
+<br>
+
+```DAX
+cores_classificacao_vendedores = 
+
+-- Medida:
+--      cores_classificacao_vendedores
+--
+-- Descrição:
+--      Define cores hexadecimais associadas a cada classificação de vendedor,
+--      permitindo a aplicação de formatação condicional em visuais do Power BI.
+--
+-- Tabela origem:
+--      Medida calculada (baseada na medida [classificacao_vendedor])
+--
+-- Regra de negócio:
+--      Atribui uma cor específica para cada categoria estratégica de vendedor:
+--
+--          ⭐ Estrela:
+--              Verde (#00C853)
+--
+--          🐄 Vaca Leiteira:
+--              Azul (#2962FF)
+--
+--          ❓ Interrogação:
+--              Laranja (#FF8F00)
+--
+--          🍍 Abacaxi:
+--              Vermelho (#D50000)
+--
+-- Dependências:
+--      [classificacao_vendedor]
+--
+-- Retorno:
+--      Código de cor em formato hexadecimal (texto), utilizado para formatação condicional.
+--
+-- Observação:
+--      Caso a classificação não corresponda a nenhuma das categorias definidas,
+--      o resultado será BLANK(), podendo impactar visuais que dependem de cor.
+
+SWITCH(
+    [classificacao_vendedor],
+
+    "⭐ Estrela (↑Faturamento ↑Quantidade)", "#00C853",
+    "🐄 Vaca Leiteira (↑Faturamento ↓Quantidade)", "#2962FF",
+    "❓ Interrogação (↓Faturamento ↑Quantidade)", "#FF8F00",
+    "🍍 Abacaxi (↓Faturamento ↓Quantidade)", "#D50000"
+
+)
+```
+<br>
+
+```DAX
+cores_classificacao_localidade = 
+
+-- Medida:
+--      cores_classificacao_localidade
+--
+-- Descrição:
+--      Define cores hexadecimais associadas a cada classificação de localidade,
+--      permitindo a aplicação de formatação condicional em visuais do Power BI.
+--
+-- Tabela origem:
+--      Medida calculada (baseada na medida [classificacao_localidade])
+--
+-- Regra de negócio:
+--      Atribui uma cor específica para cada categoria estratégica de localidade:
+--
+--          ⭐ Estrela:
+--              Verde (#00C853)
+--
+--          🐄 Vaca Leiteira:
+--              Azul (#2962FF)
+--
+--          ❓ Interrogação:
+--              Laranja (#FF8F00)
+--
+--          🍍 Abacaxi:
+--              Vermelho (#D50000)
+--
+-- Dependências:
+--      [classificacao_localidade]
+--
+-- Retorno:
+--      Código de cor em formato hexadecimal (texto), utilizado para formatação condicional.
+--
+-- Observação:
+--      Caso a classificação não corresponda a nenhuma das categorias definidas,
+--      o resultado será BLANK(), podendo impactar visuais que dependem de cor.
+
+SWITCH(
+    [classificacao_localidade],
+
+    "⭐ Estrela (↑Faturamento ↑Quantidade)", "#00C853",
+    "🐄 Vaca Leiteira (↑Faturamento ↓Quantidade)", "#2962FF",
+    "❓ Interrogação (↓Faturamento ↑Quantidade)", "#FF8F00",
+    "🍍 Abacaxi (↓Faturamento ↓Quantidade)", "#D50000"
+
+)
+```
+<br>
+
+```DAX
+nome_produto = 
+
+-- Medida:
+--      nome_produto
+--
+-- Descrição:
+--      Retorna o nome do produto selecionado no contexto atual do relatório,
+--      sendo útil para exibição dinâmica em títulos, cartões e elementos de interface.
+--
+-- Tabela origem:
+--      dimensao_produtos
+--
+-- Regra de negócio:
+--      Recupera o valor único da coluna de nome do produto no contexto filtrado.
+--      Caso haja mais de um produto selecionado ou nenhum, o resultado será BLANK().
+--
+-- Dependências:
+--      dimensao_produtos[nome_produto]
+--
+-- Retorno:
+--      Texto contendo o nome do produto selecionado.
+--
+-- Observação:
+--      A função SELECTEDVALUE retorna o valor quando há apenas um no contexto;
+--      caso contrário, retorna BLANK(), evitando ambiguidade em cenários com múltiplas seleções.
+
+VAR _Resultado =
+    SELECTEDVALUE(
+        dimensao_produtos[nome_produto]
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+nome_vendedor = 
+
+-- Medida:
+--      nome_vendedor
+--
+-- Descrição:
+--      Retorna o nome do vendedor selecionado no contexto atual do relatório,
+--      sendo útil para exibição dinâmica em títulos, cartões e elementos de interface.
+--
+-- Tabela origem:
+--      dimensao_vendedores
+--
+-- Regra de negócio:
+--      Recupera o valor único da coluna de nome do vendedor no contexto filtrado.
+--      Caso haja mais de um vendedor selecionado ou nenhum, o resultado será BLANK().
+--
+-- Dependências:
+--      dimensao_vendedores[nome_vendedor]
+--
+-- Retorno:
+--      Texto contendo o nome do vendedor selecionado.
+--
+-- Observação:
+--      A função SELECTEDVALUE retorna o valor quando há apenas um no contexto;
+--      caso contrário, retorna BLANK(), evitando ambiguidade em cenários com múltiplas seleções.
+
+VAR _Resultado =
+    SELECTEDVALUE(
+        dimensao_vendedores[nome_vendedor]
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+nome_gerente = 
+
+-- Medida:
+--      nome_gerente
+--
+-- Descrição:
+--      Retorna o nome do gerente associado ao contexto de estado selecionado,
+--      utilizando um relacionamento alternativo entre as tabelas de estados e vendedores.
+--
+-- Tabela origem:
+--      dimensao_vendedores (com suporte da dimensao_estados_brasileiros)
+--
+-- Regra de negócio:
+--      Recupera o nome do gerente correspondente à UF selecionada,
+--      ativando explicitamente o relacionamento entre as tabelas de estados e vendedores.
+--
+--      Caso haja mais de um gerente no contexto ou nenhum, o resultado será BLANK().
+--
+-- Dependências:
+--      dimensao_vendedores[nome_gerente]
+--      dimensao_vendedores[uf]
+--      dimensao_estados_brasileiros[uf]
+--
+-- Retorno:
+--      Texto contendo o nome do gerente associado ao estado selecionado.
+--
+-- Observação:
+--      A função USERELATIONSHIP é utilizada para ativar um relacionamento inativo
+--      entre as tabelas dimensao_estados_brasileiros e dimensao_vendedores.
+--
+--      SELECTEDVALUE garante que apenas um único gerente seja retornado,
+--      evitando ambiguidades em cenários com múltiplos valores no contexto.
+
+VAR _Resultado =
+    CALCULATE(
+        SELECTEDVALUE(
+            dimensao_vendedores[nome_gerente]
+        ),
+        USERELATIONSHIP(
+            dimensao_estados_brasileiros[uf],
+            dimensao_vendedores[uf]
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+nome_estado = 
+
+-- Medida:
+--      nome_estado
+--
+-- Descrição:
+--      Retorna o nome do estado selecionado no contexto atual do relatório,
+--      sendo útil para exibição dinâmica em títulos, cartões e elementos de interface.
+--
+-- Tabela origem:
+--      dimensao_estados_brasileiros
+--
+-- Regra de negócio:
+--      Recupera o valor único da coluna de nome do estado no contexto filtrado.
+--      Caso haja mais de um estado selecionado ou nenhum, o resultado será BLANK().
+--
+-- Dependências:
+--      dimensao_estados_brasileiros[nome_estado]
+--
+-- Retorno:
+--      Texto contendo o nome do estado selecionado.
+--
+-- Observação:
+--      A função SELECTEDVALUE retorna o valor quando há apenas um no contexto;
+--      caso contrário, retorna BLANK(), evitando ambiguidade em cenários com múltiplas seleções.
+
+VAR _Resultado =
+    SELECTEDVALUE(
+        dimensao_estados_brasileiros[nome_estado]
+    )
+
+RETURN
+    _Resultado
+```
