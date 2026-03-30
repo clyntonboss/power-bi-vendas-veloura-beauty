@@ -638,6 +638,45 @@ RETURN
 <br>
 
 ```DAX
+quantidade_produtos_vendidos_total = 
+
+-- Medida:
+--      quantidade_produtos_vendidos_total
+--
+-- Descrição:
+--      Calcula a quantidade total de produtos vendidos, considerando todas as vendas
+--      registradas na tabela de fatos e respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      fato_vendas
+--
+-- Regra de negócio:
+--      Soma os valores da coluna de quantidade da tabela de vendas,
+--      representando o total de produtos vendidos no período ou contexto selecionado.
+--
+-- Dependências:
+--      fato_vendas[quantidade]
+--
+-- Retorno:
+--      Valor numérico representando a quantidade total de produtos vendidos.
+--
+-- Observação:
+--      A função SUM realiza a agregação direta da coluna de quantidade.
+--
+--      Diferente do faturamento_total (que exige cálculo linha a linha com SUMX),
+--      aqui a soma simples é suficiente, pois a quantidade já está no nível correto de granularidade.
+
+VAR _Resultado =
+    SUM(
+        fato_vendas[quantidade]
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
 quantidade_produtos_vendidos_loja = 
 
 -- Medida:
@@ -718,45 +757,6 @@ RETURN
         _Resultado,
         0
     )
-```
-<br>
-
-```DAX
-quantidade_produtos_vendidos_total = 
-
--- Medida:
---      quantidade_produtos_vendidos_total
---
--- Descrição:
---      Calcula a quantidade total de produtos vendidos, considerando todas as vendas
---      registradas na tabela de fatos e respeitando o contexto de filtros do relatório.
---
--- Tabela origem:
---      fato_vendas
---
--- Regra de negócio:
---      Soma os valores da coluna de quantidade da tabela de vendas,
---      representando o total de produtos vendidos no período ou contexto selecionado.
---
--- Dependências:
---      fato_vendas[quantidade]
---
--- Retorno:
---      Valor numérico representando a quantidade total de produtos vendidos.
---
--- Observação:
---      A função SUM realiza a agregação direta da coluna de quantidade.
---
---      Diferente do faturamento_total (que exige cálculo linha a linha com SUMX),
---      aqui a soma simples é suficiente, pois a quantidade já está no nível correto de granularidade.
-
-VAR _Resultado =
-    SUM(
-        fato_vendas[quantidade]
-    )
-
-RETURN
-    _Resultado
 ```
 <br>
 
