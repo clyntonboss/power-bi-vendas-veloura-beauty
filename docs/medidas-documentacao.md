@@ -638,11 +638,406 @@ RETURN
 <br>
 
 ```DAX
+quantidade_produtos_vendidos_loja = 
 
+-- Medida:
+--      quantidade_produtos_vendidos_loja
+--
+-- Descrição:
+--      Calcula a quantidade total de produtos vendidos no canal Loja,
+--      respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Filtra a quantidade total de produtos vendidos considerando apenas
+--      as vendas realizadas no canal "Loja".
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      dimensao_canais[canal]
+--
+-- Retorno:
+--      Valor numérico representando a quantidade de produtos vendidos no canal Loja.
+--
+-- Observação:
+--      A função CALCULATE altera o contexto de filtro para considerar apenas o canal Loja.
+--      COALESCE é utilizado para garantir retorno 0 quando o resultado for BLANK().
+
+VAR _Resultado =
+    CALCULATE(
+        [quantidade_produtos_vendidos_total],
+        dimensao_canais[canal] = "Loja"
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+quantidade_produtos_vendidos_ecommerce = 
+
+-- Medida:
+--      quantidade_produtos_vendidos_ecommerce
+--
+-- Descrição:
+--      Calcula a quantidade total de produtos vendidos no canal e-Commerce,
+--      respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Filtra a quantidade total de produtos vendidos considerando apenas
+--      as vendas realizadas no canal "e-Commerce".
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      dimensao_canais[canal]
+--
+-- Retorno:
+--      Valor numérico representando a quantidade de produtos vendidos no canal e-Commerce.
+--
+-- Observação:
+--      A função CALCULATE altera o contexto de filtro para considerar apenas o canal e-Commerce.
+--      COALESCE é utilizado para garantir retorno 0 quando o resultado for BLANK().
+
+VAR _Resultado =
+    CALCULATE(
+        [quantidade_produtos_vendidos_total],
+        dimensao_canais[canal] = "e-Commerce"
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+quantidade_produtos_vendidos_total = 
+
+-- Medida:
+--      quantidade_produtos_vendidos_total
+--
+-- Descrição:
+--      Calcula a quantidade total de produtos vendidos, considerando todas as vendas
+--      registradas na tabela de fatos e respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      fato_vendas
+--
+-- Regra de negócio:
+--      Soma os valores da coluna de quantidade da tabela de vendas,
+--      representando o total de produtos vendidos no período ou contexto selecionado.
+--
+-- Dependências:
+--      fato_vendas[quantidade]
+--
+-- Retorno:
+--      Valor numérico representando a quantidade total de produtos vendidos.
+--
+-- Observação:
+--      A função SUM realiza a agregação direta da coluna de quantidade.
+--
+--      Diferente do faturamento_total (que exige cálculo linha a linha com SUMX),
+--      aqui a soma simples é suficiente, pois a quantidade já está no nível correto de granularidade.
+
+VAR _Resultado =
+    SUM(
+        fato_vendas[quantidade]
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+maior_menor_percentual_variacao_produtos_vendidos_loja_ecommerce = 
+
+-- Medida:
+--      maior_menor_percentual_variacao_produtos_vendidos_loja_ecommerce
+--
+-- Descrição:
+--      Identifica e retorna os valores de maior e menor variação percentual da quantidade
+--      de produtos vendidos entre os canais Loja e e-Commerce dentro do contexto temporal selecionado.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em dimensao_calendario e métricas de variação)
+--
+-- Regra de negócio:
+--      Calcula a maior e a menor variação percentual considerando os períodos (meses)
+--      visíveis no contexto atual do relatório.
+--
+--      Retorna o valor da variação apenas quando ele corresponde ao maior ou ao menor valor.
+--      Para os demais casos, retorna BLANK().
+--
+-- Dependências:
+--      [percentual_variacao_produtos_vendidos_loja_ecommerce]
+--      dimensao_calendario[mes_abreviado]
+--      dimensao_calendario[mes_numero]
+--
+-- Retorno:
+--      Valor numérico representando a maior ou menor variação percentual no período analisado,
+--      ou BLANK() para os demais casos.
+--
+-- Observação:
+--      A função ALLSELECTED garante que o cálculo respeite os filtros aplicados pelo usuário,
+--      considerando apenas os períodos visíveis no contexto atual.
+--
+--      MINX e MAXX são utilizados para identificar os extremos da variação percentual.
+--
+--      A lógica permite destacar visualmente os pontos de maior crescimento e maior queda
+--      na quantidade de produtos vendidos, reforçando o storytelling temporal.
+
+VAR _MenorVariacao =
+    MINX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [percentual_variacao_produtos_vendidos_loja_ecommerce]
+    )
+
+VAR _MaiorVariacao =
+    MAXX(
+        ALLSELECTED(
+            dimensao_calendario[mes_abreviado],
+            dimensao_calendario[mes_numero]
+        ),
+        [percentual_variacao_produtos_vendidos_loja_ecommerce]
+    )
+
+RETURN
+    IF(
+        [percentual_variacao_produtos_vendidos_loja_ecommerce] = _MaiorVariacao
+        || [percentual_variacao_produtos_vendidos_loja_ecommerce] = _MenorVariacao,
+        [percentual_variacao_produtos_vendidos_loja_ecommerce]
+    )
+```
+<br>
+
+```DAX
+formato_variacao_produtos_vendidos = 
+
+-- Medida:
+--      formato_variacao_produtos_vendidos
+--
+-- Descrição:
+--      Formata a variação percentual da quantidade de produtos vendidos entre os canais
+--      Loja e e-Commerce, adicionando indicadores visuais (setas) para facilitar a interpretação.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em [maior_menor_percentual_variacao_produtos_vendidos_loja_ecommerce])
+--
+-- Regra de negócio:
+--      Aplica formatação condicional ao valor percentual:
+--
+--          Valores positivos:
+--              Exibidos com símbolo ▲
+--
+--          Valores negativos:
+--              Exibidos com símbolo ▼
+--
+--      O valor é apresentado no formato percentual com duas casas decimais.
+--
+-- Dependências:
+--      [maior_menor_percentual_variacao_produtos_vendidos_loja_ecommerce]
+--
+-- Retorno:
+--      Texto formatado representando a variação percentual com indicadores visuais.
+--
+-- Observação:
+--      A função FORMAT converte o valor numérico em texto, permitindo customização visual.
+--      O padrão "▲ 0.00%; ▼ 0.00%" define formatos distintos para valores positivos e negativos.
+--
+--      Atenção: como o resultado é texto, essa medida não deve ser utilizada em cálculos adicionais,
+--      sendo indicada apenas para exibição em visuais.
+
+VAR _Resultado =
+    FORMAT(
+        [maior_menor_percentual_variacao_produtos_vendidos_loja_ecommerce],
+        "▲ 0.00%; ▼ 0.00%"
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+percentual_quantidade_produtos_vendidos_loja = 
+
+-- Medida:
+--      percentual_quantidade_produtos_vendidos_loja
+--
+-- Descrição:
+--      Calcula a participação percentual da quantidade de produtos vendidos pelo canal Loja
+--      em relação ao total de produtos vendidos, respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide a quantidade de produtos vendidos no canal Loja pela quantidade total
+--      de produtos vendidos, resultando na representatividade percentual desse canal.
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      [quantidade_produtos_vendidos_loja]
+--
+-- Retorno:
+--      Valor numérico representando a participação percentual da Loja (entre 0 e 1).
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      A medida pode ser formatada como percentual nos visuais do Power BI
+--      para melhor interpretação pelo usuário.
+
+VAR _QuantidadeProdutosVendidosTotal =
+    [quantidade_produtos_vendidos_total]
+
+VAR _QuantidadeProdutosVendidosLoja =
+    [quantidade_produtos_vendidos_loja]
+
+VAR _Resultado =
+    DIVIDE(
+        _QuantidadeProdutosVendidosLoja,
+        _QuantidadeProdutosVendidosTotal
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+percentual_quantidade_produtos_vendidos_ecommerce = 
+
+-- Medida:
+--      percentual_quantidade_produtos_vendidos_ecommerce
+--
+-- Descrição:
+--      Calcula a participação percentual da quantidade de produtos vendidos pelo canal e-Commerce
+--      em relação ao total de produtos vendidos, respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide a quantidade de produtos vendidos no canal e-Commerce pela quantidade total
+--      de produtos vendidos, resultando na representatividade percentual desse canal.
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_total]
+--      [quantidade_produtos_vendidos_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando a participação percentual do e-Commerce (entre 0 e 1).
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      A medida pode ser formatada como percentual nos visuais do Power BI
+--      para melhor interpretação pelo usuário.
+
+VAR _QuantidadeProdutosVendidosTotal =
+    [quantidade_produtos_vendidos_total]
+
+VAR _QuantidadeProdutosVendidosEcommerce =
+    [quantidade_produtos_vendidos_ecommerce]
+
+VAR _Resultado =
+    DIVIDE(
+        _QuantidadeProdutosVendidosEcommerce,
+        _QuantidadeProdutosVendidosTotal
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+percentual_variacao_produtos_vendidos_loja_ecommerce = 
+
+-- Medida:
+--      percentual_variacao_produtos_vendidos_loja_ecommerce
+--
+-- Descrição:
+--      Calcula a variação percentual da quantidade de produtos vendidos entre os canais
+--      Loja e e-Commerce, utilizando o canal Loja como base de comparação.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Subtrai a quantidade de produtos vendidos no e-Commerce da quantidade vendida na Loja
+--      e divide pelo total da Loja, resultando na variação percentual relativa ao canal Loja.
+--
+--      Interpretação:
+--
+--          Valor positivo:
+--              Loja vendeu mais produtos que o e-Commerce
+--
+--          Valor negativo:
+--              e-Commerce vendeu mais produtos que a Loja
+--
+--          Valor próximo de zero:
+--              Canais com volume semelhante
+--
+-- Dependências:
+--      [quantidade_produtos_vendidos_loja]
+--      [quantidade_produtos_vendidos_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando a variação percentual entre os canais (entre -∞ e +∞).
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--
+--      O resultado pode ser formatado como percentual para melhor interpretação.
+--
+--      Importante: a escolha do canal Loja como base influencia a leitura da métrica.
+--      Caso necessário, pode-se criar uma versão alternativa utilizando o e-Commerce como base.
+
+VAR _Resultado =
+    DIVIDE(
+        [quantidade_produtos_vendidos_loja] - [quantidade_produtos_vendidos_ecommerce],
+        [quantidade_produtos_vendidos_loja]
+    )
+
+RETURN
+    _Resultado
 ```
 <br>
 
 ## Medidas de Ticket Médio
+<br>
+
+```DAX
+
+```
+<br>
+
+## Medidas de Classificação
 <br>
 
 ```DAX
