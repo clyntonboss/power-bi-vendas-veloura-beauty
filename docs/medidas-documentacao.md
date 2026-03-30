@@ -1033,7 +1033,608 @@ RETURN
 <br>
 
 ```DAX
+ticket_medio_transacao_total = 
 
+-- Medida:
+--      ticket_medio_transacao_total
+--
+-- Descrição:
+--      Calcula o ticket médio por transação considerando todos os canais,
+--      representando o valor médio de cada venda realizada no total.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas)
+--
+-- Regra de negócio:
+--      Divide o faturamento total pela quantidade total de transações,
+--      retornando o valor médio por venda (pedido) no contexto analisado.
+--
+-- Dependências:
+--      [faturamento_total]
+--      [transacoes_total]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por transação geral.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida considera o comportamento agregado de compra,
+--      sendo diferente do ticket médio por produto (valor por unidade).
+--
+--      Permite análise comparativa entre canais e acompanhamento da performance
+--      geral das vendas.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_total],
+        [transacoes_total]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_transacao_loja = 
+
+-- Medida:
+--      ticket_medio_transacao_loja
+--
+-- Descrição:
+--      Calcula o ticket médio por transação no canal Loja,
+--      representando o valor médio de cada venda realizada neste canal.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento total do canal Loja pela quantidade
+--      de transações realizadas nesse canal.
+--
+--      O resultado representa o valor médio por venda (pedido) na loja.
+--
+-- Dependências:
+--      [faturamento_loja]
+--      [transacoes_loja]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por transação no canal Loja.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o ticket médio por venda (pedido),
+--      sendo diferente do ticket médio por produto (valor por unidade).
+--
+--      Pode refletir comportamento de compra na loja, como quantidade de itens
+--      por transação e valor agregado por pedido.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_loja],
+        [transacoes_loja]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_transacao_ecommerce = 
+
+-- Medida:
+--      ticket_medio_transacao_ecommerce
+--
+-- Descrição:
+--      Calcula o ticket médio por transação no canal e-Commerce,
+--      representando o valor médio de cada venda realizada.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento total do canal e-Commerce pela quantidade
+--      de transações realizadas nesse canal.
+--
+--      O resultado representa o valor médio por venda (pedido).
+--
+-- Dependências:
+--      [faturamento_ecommerce]
+--      [transacoes_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por transação no canal e-Commerce.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o ticket médio por venda (pedido),
+--      sendo diferente do ticket médio por produto (valor por unidade).
+--
+--      Pode refletir comportamento de compra, como quantidade de itens por pedido
+--      e valor agregado por transação.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_ecommerce],
+        [transacoes_ecommerce]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_produto_total = 
+
+-- Medida:
+--      ticket_medio_produto_total
+--
+-- Descrição:
+--      Calcula o ticket médio geral por produto, representando o valor médio
+--      de venda por unidade comercializada considerando todos os canais.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas)
+--
+-- Regra de negócio:
+--      Divide o faturamento total pela quantidade total de produtos vendidos,
+--      resultando no valor médio por unidade no contexto analisado.
+--
+-- Dependências:
+--      [faturamento_total]
+--      [quantidade_produtos_vendidos_total]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio geral por produto.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o preço médio efetivo de venda,
+--      podendo refletir descontos, variações de preço, mix de produtos e diferenças entre canais.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_total],
+        [quantidade_produtos_vendidos_total]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_produto_loja = 
+
+-- Medida:
+--      ticket_medio_produto_loja
+--
+-- Descrição:
+--      Calcula o ticket médio por produto no canal Loja,
+--      representando o valor médio de venda por unidade comercializada.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento total do canal Loja pela quantidade total
+--      de produtos vendidos nesse canal.
+--
+--      O resultado representa o valor médio por unidade vendida.
+--
+-- Dependências:
+--      [faturamento_loja]
+--      [quantidade_produtos_vendidos_loja]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por produto no canal Loja.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o preço médio efetivo de venda,
+--      podendo refletir descontos, variações de preço ou mix de produtos.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_loja],
+        [quantidade_produtos_vendidos_loja]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_produto_ecommerce = 
+
+-- Medida:
+--      ticket_medio_produto_ecommerce
+--
+-- Descrição:
+--      Calcula o ticket médio por produto no canal e-Commerce,
+--      representando o valor médio de venda por unidade comercializada.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento total do canal e-Commerce pela quantidade total
+--      de produtos vendidos nesse canal.
+--
+--      O resultado representa o valor médio por unidade vendida.
+--
+-- Dependências:
+--      [faturamento_ecommerce]
+--      [quantidade_produtos_vendidos_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por produto no canal e-Commerce.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o preço médio efetivo de venda,
+--      podendo refletir descontos, variações de preço ou mix de produtos.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_ecommerce],
+        [quantidade_produtos_vendidos_ecommerce]
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_vendedor_total = 
+
+-- Medida:
+--      ticket_medio_vendedor_total
+--
+-- Descrição:
+--      Calcula o ticket médio por vendedor considerando todos os canais,
+--      representando o valor médio faturado por cada vendedor no total.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas)
+--
+-- Regra de negócio:
+--      Divide o faturamento total pela quantidade distinta de vendedores
+--      que realizaram vendas no período ou contexto selecionado.
+--
+--      O resultado representa o ticket médio por vendedor agregado,
+--      considerando o desempenho global na organização.
+--
+-- Dependências:
+--      [faturamento_total]
+--      fato_vendas[id_vendedor]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por vendedor total.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Permite analisar a performance média global de todos os vendedores,
+--      útil para comparações, bônus, e decisões estratégicas de gestão de equipe.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_total],
+        DISTINCTCOUNT(
+            fato_vendas[id_vendedor]
+        )
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_vendedor_loja = 
+
+-- Medida:
+--      ticket_medio_vendedor_loja
+--
+-- Descrição:
+--      Calcula o ticket médio por vendedor no canal Loja,
+--      representando o valor médio faturado por cada vendedor nesse canal.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento total do canal Loja pela quantidade
+--      distinta de vendedores que realizaram vendas nesse canal.
+--
+--      O resultado representa o ticket médio por vendedor (valor médio gerado por cada vendedor).
+--
+-- Dependências:
+--      [faturamento_loja]
+--      fato_vendas[id_vendedor]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por vendedor no canal Loja.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Permite analisar a performance média de cada vendedor no canal Loja,
+--      útil para comparações, bonificações e gestão de equipe.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_loja],
+        CALCULATE(
+            DISTINCTCOUNT(
+                fato_vendas[id_vendedor]
+            ),
+            fato_vendas[id_canal]="1"
+        )
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_vendedor_ecommerce = 
+
+-- Medida:
+--      ticket_medio_vendedor_ecommerce
+--
+-- Descrição:
+--      Calcula o ticket médio por vendedor no canal e-Commerce,
+--      representando o valor médio faturado por cada vendedor nesse canal.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento total do canal e-Commerce pela quantidade
+--      distinta de vendedores que realizaram vendas nesse canal.
+--
+--      O resultado representa o ticket médio por vendedor (valor médio gerado por cada vendedor).
+--
+-- Dependências:
+--      [faturamento_ecommerce]
+--      fato_vendas[id_vendedor]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por vendedor no canal e-Commerce.
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Permite analisar a performance média de cada vendedor no canal e-Commerce,
+--      útil para comparações, bonificações e gestão de equipe.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_ecommerce],
+        CALCULATE(
+            DISTINCTCOUNT(
+                fato_vendas[id_vendedor]
+            ),
+            fato_vendas[id_canal]="2"
+        )
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_localidade_total = 
+
+-- Medida:
+--      ticket_medio_localidade_total
+--
+-- Descrição:
+--      Calcula o ticket médio geral por localidade (UF), considerando o faturamento total
+--      dividido pela quantidade de localidades distintas com vendas.
+--
+-- Tabela origem:
+--      fato_vendas
+--
+-- Regra de negócio:
+--      Divide o faturamento total pela quantidade distinta de UFs presentes
+--      no contexto atual do relatório.
+--
+-- Dependências:
+--      [faturamento_total]
+--      fato_vendas[id_uf]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por localidade no contexto analisado.
+--
+-- Observação:
+--      A função DISTINCTCOUNT é utilizada para contar a quantidade de UFs distintas.
+--
+--      A função DIVIDE evita erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o ticket médio por localidade,
+--      e não por cliente, pedido ou produto.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_total],
+        DISTINCTCOUNT(
+            fato_vendas[id_uf]
+        )
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_localidade_loja = 
+
+-- Medida:
+--      ticket_medio_localidade_loja
+--
+-- Descrição:
+--      Calcula o ticket médio do canal Loja por localidade (UF),
+--      considerando o faturamento total dividido pela quantidade de localidades atendidas.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento do canal Loja pela quantidade distinta de localidades (UF)
+--      que realizaram vendas nesse canal.
+--
+--      O cálculo considera apenas registros do canal Loja.
+--
+-- Dependências:
+--      [faturamento_loja]
+--      fato_vendas[id_uf]
+--      fato_vendas[id_canal]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por localidade no canal Loja.
+--
+-- Observação:
+--      A função DISTINCTCOUNT é utilizada para contar a quantidade de UFs distintas.
+--
+--      A função CALCULATE aplica o filtro do canal Loja para garantir consistência
+--      entre numerador e denominador.
+--
+--      A função DIVIDE evita erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o ticket médio por localidade,
+--      e não por cliente ou por venda.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_loja],
+        CALCULATE(
+            DISTINCTCOUNT(
+                fato_vendas[id_uf]
+            ),
+            fato_vendas[id_canal] = "1"
+        )
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+ticket_medio_localidade_ecommerce = 
+
+-- Medida:
+--      ticket_medio_localidade_ecommerce
+--
+-- Descrição:
+--      Calcula o ticket médio do canal e-Commerce por localidade (UF),
+--      considerando o faturamento total dividido pela quantidade de localidades atendidas.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento do canal e-Commerce pela quantidade distinta de localidades (UF)
+--      que realizaram vendas nesse canal.
+--
+--      O cálculo considera apenas registros do canal e-Commerce.
+--
+-- Dependências:
+--      [faturamento_ecommerce]
+--      fato_vendas[id_uf]
+--      fato_vendas[id_canal]
+--
+-- Retorno:
+--      Valor numérico representando o ticket médio por localidade no canal e-Commerce.
+--
+-- Observação:
+--      A função DISTINCTCOUNT é utilizada para contar a quantidade de UFs distintas.
+--
+--      A função CALCULATE aplica o filtro do canal e-Commerce para garantir consistência
+--      entre numerador e denominador.
+--
+--      A função DIVIDE evita erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      Importante: esta medida representa o ticket médio por localidade,
+--      e não por cliente ou por venda.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_ecommerce],
+        CALCULATE(
+            DISTINCTCOUNT(
+                fato_vendas[id_uf]
+            ),
+            fato_vendas[id_canal] = "2"
+        )
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
 ```
 <br>
 
