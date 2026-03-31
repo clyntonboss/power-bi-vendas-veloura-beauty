@@ -3,9 +3,9 @@
 
 ## 📊 Visão Geral
 
-Este projeto apresenta um **dashboard de gestão logística desenvolvido em Power BI**, criado para monitorar a eficiência operacional da empresa fictícia **TransFlow Logistics**.
+Este projeto apresenta um **dashboard de análise de vendas desenvolvido em Power BI**, criado para monitorar a performance comercial da empresa fictícia **Veloura Beauty**.
 
-A solução permite acompanhar indicadores críticos da operação, identificar gargalos logísticos e apoiar decisões estratégicas baseadas em dados.
+A solução permite acompanhar indicadores estratégicos de vendas, identificar padrões de comportamento, avaliar a eficiência de produtos, vendedores e regiões, além de apoiar decisões estratégicas orientadas por dados.
 
 🔎 **[Dashboard Interativo](https://app.powerbi.com/view?r=eyJrIjoiYjI5ZjFkOTEtNmI5YS00OGRlLThjMDQtNzliNzczNWY1MGJiIiwidCI6IjIzY2FjN2VlLWYxZDgtNDMzOS1hYTdiLTc4MWFhOWY5MjI1YiJ9)**  
 
