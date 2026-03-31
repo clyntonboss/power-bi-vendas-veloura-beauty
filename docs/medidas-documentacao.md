@@ -432,104 +432,6 @@ RETURN
 <br>
 
 ```DAX
-percentual_faturamento_ecommerce = 
-
--- Medida:
---      percentual_faturamento_ecommerce
---
--- Descrição:
---      Calcula a participação percentual do faturamento do canal e-Commerce
---      em relação ao faturamento total, respeitando o contexto de filtros do relatório.
---
--- Tabela origem:
---      Medida calculada (baseada em fVendas e dimensao_canais)
---
--- Regra de negócio:
---      Divide o faturamento do canal e-Commerce pelo faturamento total,
---      resultando na representatividade percentual desse canal no contexto analisado.
---
--- Dependências:
---      [faturamento_total]
---      [faturamento_ecommerce]
---
--- Retorno:
---      Valor numérico representando a participação percentual do e-Commerce (entre 0 e 1).
---
--- Observação:
---      A função DIVIDE é utilizada para evitar erros de divisão por zero.
---      COALESCE garante retorno 0 quando o resultado for BLANK().
---
---      A medida pode ser formatada como percentual nos visuais do Power BI
---      para melhor interpretação pelo usuário.
-
-VAR _FaturamentoTotal =
-    [faturamento_total]
-
-VAR _FaturamentoEcommerce =
-    [faturamento_ecommerce]
-
-VAR _Resultado =
-    DIVIDE(
-        _FaturamentoEcommerce,
-        _FaturamentoTotal
-    )
-
-RETURN
-    COALESCE(
-        _Resultado,
-        0
-    )
-```
-<br>
-
-```DAX
-percentual_faturamento_ecommerce_mm = 
-
--- Medida:
---      percentual_faturamento_ecommerce_mm
---
--- Descrição:
---      Calcula a participação do faturamento do canal e-Commerce em relação ao faturamento total
---      de e-Commerce considerando todo o período (ignorando filtros de tempo).
---
--- Tabela origem:
---      Medida calculada (baseada em fVendas, dimensao_canais e dimensao_calendario)
---
--- Regra de negócio:
---      Divide o faturamento de e-Commerce no contexto atual pelo faturamento total de e-Commerce
---      sem aplicação de filtros de calendário, resultando na participação relativa no período completo.
---
--- Dependências:
---      [faturamento_ecommerce]
---      dimensao_calendario
---
--- Retorno:
---      Valor numérico representando a participação percentual do e-Commerce em relação ao total geral (entre 0 e 1).
---
--- Observação:
---      A função REMOVEFILTERS remove o contexto de tempo, permitindo calcular o total global.
---      A função DIVIDE evita erros de divisão por zero.
---
---      Essa medida é útil para análises de contribuição ao longo do tempo,
---      como participação mensal no total acumulado do período.
-
-VAR _Resultado =
-    DIVIDE(
-        [faturamento_ecommerce],
-        CALCULATE(
-            [faturamento_ecommerce],
-            REMOVEFILTERS(
-                dimensao_calendario
-            )
-        )
-    )
-
-RETURN
-    _Resultado
-```
-<br>
-
-```DAX
 percentual_faturamento_loja = 
 
 -- Medida:
@@ -616,6 +518,104 @@ VAR _Resultado =
         [faturamento_loja],
         CALCULATE(
             [faturamento_loja],
+            REMOVEFILTERS(
+                dimensao_calendario
+            )
+        )
+    )
+
+RETURN
+    _Resultado
+```
+<br>
+
+```DAX
+percentual_faturamento_ecommerce = 
+
+-- Medida:
+--      percentual_faturamento_ecommerce
+--
+-- Descrição:
+--      Calcula a participação percentual do faturamento do canal e-Commerce
+--      em relação ao faturamento total, respeitando o contexto de filtros do relatório.
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas e dimensao_canais)
+--
+-- Regra de negócio:
+--      Divide o faturamento do canal e-Commerce pelo faturamento total,
+--      resultando na representatividade percentual desse canal no contexto analisado.
+--
+-- Dependências:
+--      [faturamento_total]
+--      [faturamento_ecommerce]
+--
+-- Retorno:
+--      Valor numérico representando a participação percentual do e-Commerce (entre 0 e 1).
+--
+-- Observação:
+--      A função DIVIDE é utilizada para evitar erros de divisão por zero.
+--      COALESCE garante retorno 0 quando o resultado for BLANK().
+--
+--      A medida pode ser formatada como percentual nos visuais do Power BI
+--      para melhor interpretação pelo usuário.
+
+VAR _FaturamentoTotal =
+    [faturamento_total]
+
+VAR _FaturamentoEcommerce =
+    [faturamento_ecommerce]
+
+VAR _Resultado =
+    DIVIDE(
+        _FaturamentoEcommerce,
+        _FaturamentoTotal
+    )
+
+RETURN
+    COALESCE(
+        _Resultado,
+        0
+    )
+```
+<br>
+
+```DAX
+percentual_faturamento_ecommerce_mm = 
+
+-- Medida:
+--      percentual_faturamento_ecommerce_mm
+--
+-- Descrição:
+--      Calcula a participação do faturamento do canal e-Commerce em relação ao faturamento total
+--      de e-Commerce considerando todo o período (ignorando filtros de tempo).
+--
+-- Tabela origem:
+--      Medida calculada (baseada em fVendas, dimensao_canais e dimensao_calendario)
+--
+-- Regra de negócio:
+--      Divide o faturamento de e-Commerce no contexto atual pelo faturamento total de e-Commerce
+--      sem aplicação de filtros de calendário, resultando na participação relativa no período completo.
+--
+-- Dependências:
+--      [faturamento_ecommerce]
+--      dimensao_calendario
+--
+-- Retorno:
+--      Valor numérico representando a participação percentual do e-Commerce em relação ao total geral (entre 0 e 1).
+--
+-- Observação:
+--      A função REMOVEFILTERS remove o contexto de tempo, permitindo calcular o total global.
+--      A função DIVIDE evita erros de divisão por zero.
+--
+--      Essa medida é útil para análises de contribuição ao longo do tempo,
+--      como participação mensal no total acumulado do período.
+
+VAR _Resultado =
+    DIVIDE(
+        [faturamento_ecommerce],
+        CALCULATE(
+            [faturamento_ecommerce],
             REMOVEFILTERS(
                 dimensao_calendario
             )
