@@ -113,10 +113,10 @@ Monitoramento contínuo e evolução da solução, adaptando-se às mudanças e 
 
 A solução permite:
 
-- identificar rapidamente **gargalos na operação logística**
-- analisar **motoristas com maior índice de atraso**
-- detectar **padrões de devoluções**
-- monitorar **clientes com maior volume de pedidos**
+- identificar rapidamente **produtos de alta e baixa performance**
+- analisar **vendedores com maior eficiência comercial**
+- detectar **padrões de comportamento de vendas**
+- monitorar **regiões com maior potencial de crescimento**
 
 Com isso, gestores conseguem tomar decisões mais rápidas e baseadas em dados.
 
@@ -126,69 +126,88 @@ Com isso, gestores conseguem tomar decisões mais rápidas e baseadas em dados.
 
 ### 📊 **Indicadores Principais**
 
-O dashboard apresenta três cartões principais:
+O dashboard apresenta quatro cartões principais:
 
-### Volume de Pedidos
+### Faturamento
 
-- quantidade total de pedidos
-- quantidade e percentual de entregas realizadas no prazo
+- valor total de vendas realizadas
+- comparação entre canais loja e e-Commerce
 
-### Volume de Produtos Transportados
+### Transações
 
-- quantidade total de produtos transportados
-- quantidade e percentual de produtos devolvidos
+- quantidade total de vendas (notas fiscais)
+- distribuição entre canais de venda
 
-### Base de Motoristas Ativos
+### Produtos Vendidos
 
-- quantidade total de motoristas ativos
+- volume total de itens comercializados
+- análise comparativa entre loja e e-Commerce
+
+### Ticket Médio
+
+- valor médio por transação
+- comparação entre canais de venda
 
 ---
 
 ## 📊 Visualizações Analíticas
 
-### 🚚 **Performance de Entregas**
+### 📈 **Faturamento: Loja vs e-Commerce**
 
-Gráfico de rosca mostrando:
+Gráfico de linhas mostrando:
 
-- pedidos entregues no prazo
-- pedidos entregues atrasados
-- quantidade e percentual de cada categoria
-
----
-
-### 👥 **Pedidos por Cliente**
-
-Gráfico de barras horizontais que apresenta:
-
-- quantidade de pedidos por cliente
-- identificação dos clientes com maior volume de pedidos
+- evolução do faturamento ao longo do tempo
+- comparação entre canais de venda
+- identificação de variações mensais
 
 ---
 
-### ⏱️ **Atrasos por Motorista**
+### 🧾 **Transações: Loja vs e-Commerce**
 
-Gráfico de barras horizontais mostrando:
+Gráfico de linhas que apresenta:
 
-- número de atrasos registrados por motorista
+- volume de transações por período
+- comportamento dos canais de venda
+- análise de tendências
+
+---
+
+### 📦 **Produtos Vendidos: Loja vs e-Commerce**
+
+Gráfico de barras verticais mostrando:
+
+- volume de produtos vendidos por período
+- comparação entre canais
+- identificação de oscilações
+
+---
+
+### 🧠 **Eficiência: Volume vs Faturamento**
+
+Gráfico de dispersão exibindo:
+
+- relação entre quantidade vendida e faturamento
+- classificação de produtos e vendedores (matriz BCG)
 - identificação de padrões de performance
 
 ---
 
-### 🔁 **Motivos de Devolução por Motorista**
+### 🗺️ **Distribuição Geográfica**
 
-Gráfico de barras verticais empilhadas que apresenta:
+Mapa destacando:
 
-- percentual de motivos de devolução
-- relação entre devolução e motorista responsável
+- performance por estado
+- identificação de regiões com maior relevância
+- análise de concentração de vendas
 
 ---
 
-### 📦 **Distribuição de Devoluções**
+### 🧩 **Categorias de Produtos**
 
-Gráfico **Treemap** exibindo:
+Gráfico **Rosca** exibindo:
 
-- quantidade de devoluções por motivo
-- impacto relativo de cada causa
+- distribuição de vendas por categoria
+- participação percentual de cada segmento
 
 ---
 
@@ -197,9 +216,11 @@ Gráfico **Treemap** exibindo:
 O dashboard permite análise dinâmica por:
 
 - **Ano**
-- **Estado**
+- **Produto**
+- **Vendedor**
+- **Localidade**
 
-Esses filtros permitem explorar diferentes cenários operacionais.
+Esses filtros permitem explorar diferentes perspectivas de análise.
 
 ---
 
@@ -207,10 +228,16 @@ Esses filtros permitem explorar diferentes cenários operacionais.
 
 O dashboard inclui recursos de usabilidade e design:
 
+Barra de Menu Lateral
+
+- 🏠 **Início**
+- 🔎 **Visão Geral**
+- 🎁 **Análise por Produto**
+- 👤 **Análise por Vendedor**
+- 🚩 **Análise por Localidade**
+- 💬 **Conclsão**
 - 🌙 **Modo Dark (padrão)**
 - ☀️ **Modo Light (opcional)**
-- 🔎 botão **Analisar**
-- 🏠 botão **Home**
 
 Esses elementos melhoram a experiência de exploração dos dados.
 
@@ -218,12 +245,12 @@ Esses elementos melhoram a experiência de exploração dos dados.
 
 ## 🛠️ Stack Técnica
 
-- Excel
-- Microsoft Power BI
+- Power BI
 - Power Query
 - DAX (Data Analysis Expressions)
 - Modelagem Dimensional
 - Storytelling com Dados
+- Business Intelligence
 - PowerPoint
 
 ---
