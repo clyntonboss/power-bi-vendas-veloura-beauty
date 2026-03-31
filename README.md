@@ -13,14 +13,14 @@ A solução permite acompanhar indicadores estratégicos de vendas, identificar 
 
 ## 🧠 Contexto do Problema
 
-A operação logística da **TransFlow Logistics** enfrentava desafios no monitoramento de:
+A operação comercial da **Veloura Beauty** enfrentava desafios na análise integrada de:
 
-- pedidos entregues no prazo
-- desempenho de motoristas
-- controle de devoluções
-- visibilidade sobre clientes e volume de pedidos
+- escala por canal de venda
+- desempenho de vendedores
+- eficiência de produtos
+- variação de performance entre regiões
 
-Essas limitações dificultavam a identificação rápida de problemas operacionais e impactavam diretamente a eficiência da cadeia logística e a experiência do cliente.
+Essas limitações dificultavam a identificação rápida de oportunidades e gargalos comerciais, impactando diretamente a tomada de decisão estratégica e a performance de vendas.
 
 ---
 
@@ -31,14 +31,15 @@ Para resolver esses desafios, foi desenvolvida uma solução analítica utilizan
 O dashboard foi projetado para oferecer:
 
 - leitura executiva clara
-- monitoramento operacional detalhado
-- navegação intuitiva entre métricas logísticas  
+- análise comparativa entre canais de venda
+- navegação intuitiva entre diferentes dimensões do negócio  
 
 ### KPIs principais
 
-- Volume de Pedidos
-- Volume de Produtos Transportados
-- Base de Motoristas Ativos
+- Faturamento
+- Transações
+- Produtos Vendidos
+- Ticket Médio
 
 ---
 
