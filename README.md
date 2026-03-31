@@ -15,7 +15,7 @@ A solução permite acompanhar indicadores estratégicos de vendas, identificar 
 
 A operação comercial da **Veloura Beauty** enfrentava desafios na análise integrada de:
 
-- escala por canal de venda
+- desempenho por canal de venda
 - desempenho de vendedores
 - eficiência de produtos
 - variação de performance entre regiões
@@ -154,11 +154,11 @@ O dashboard apresenta quatro cartões principais:
 
 ### 📈 **Faturamento: Loja vs e-Commerce**
 
-Gráfico de linhas mostrando:
+Gráfico de barras clusterizadas mostrando:
 
-- evolução do faturamento ao longo do tempo
-- comparação entre canais de venda
-- identificação de variações mensais
+- comparação do faturamento entre os canais loja e e-Commerce
+- análise mensal de desempenho
+- identificação de variações e diferenças entre os canais
 
 ---
 
@@ -235,7 +235,7 @@ Barra de Menu Lateral
 - 🎁 **Análise por Produto**
 - 👤 **Análise por Vendedor**
 - 🚩 **Análise por Localidade**
-- 💬 **Conclsão**
+- 💬 **Conclusão**
 - 🌙 **Modo Dark (padrão)**
 - ☀️ **Modo Light (opcional)**
 
@@ -250,7 +250,6 @@ Esses elementos melhoram a experiência de exploração dos dados.
 - DAX (Data Analysis Expressions)
 - Modelagem Dimensional
 - Storytelling com Dados
-- Business Intelligence
 - PowerPoint
 
 ---
@@ -267,18 +266,18 @@ Essa abordagem é amplamente recomendada em soluções de Business Intelligence,
 
 ### **Tabelas Fato**
 
-- pedidos realizados
+- vendas
 
 ### **Tabelas Dimensão**
 
 - calendário
-- clientes
-- motoristas
-- destino
-- status
-- motivo de devolução
+- preços dos produtos
+- canais
+- produtos
+- estados brasileiros
+- vendedores
 
-Com isso, a solução proporciona maior visibilidade operacional, permitindo a identificação proativa de gargalos, melhoria no desempenho logístico e suporte mais assertivo à tomada de decisão estratégica.
+Com isso, a solução proporciona maior visibilidade comercial, permitindo a identificação de padrões de vendas, análise de performance por diferentes dimensões do negócio e suporte mais assertivo à tomada de decisão estratégica.
 
 ## 🗂️ Modelo de Dados
 
