@@ -1,10 +1,23 @@
-# Documentação das Medidas: Projeto Vendas — Veloura Beauty
+# Documentação das Medidas
+## Projeto Vendas — Veloura Beauty
 
 Este documento lista todas as medidas criadas no modelo Power BI, suas regras de negócio, dependências e retornos esperados.
+<br>
+
+[← Voltar ao Projeto](https://github.com/clyntonboss/power-bi-vendas-veloura-beauty)
+<br>
+
+Índice das Medidas:
+- 💰 [Faturamento](#-medidas-de-faturamento)
+- 💼 [Transaçõesl](#-medidas-de-transações)
+- 📦 [Produtos Vendidos](#-medidas-de-produtos-vendidos)
+- 🎟 [Ticket Médio](#-medidas-de-ticket-médio)
+- 🏆 [Classificação](#-medidas-de-classificação)
 
 ---
 
-## Medidas de Faturamento
+## 💰 Medidas de Faturamento
+[← Topo](#documentação-das-medidas)
 <br>
 
 ```DAX
@@ -626,7 +639,8 @@ RETURN
     _Resultado
 ```
 
-## Medidas de Transações
+## 💼 Medidas de Transações
+[← Topo](#documentação-das-medidas)
 <br>
 
 ```DAX
@@ -1085,7 +1099,8 @@ RETURN
     _Resultado
 ```
 
-## Medidas de Produtos Vendidos
+## 📦 Medidas de Produtos Vendidos
+[← Topo](#documentação-das-medidas)
 <br>
 
 ```DAX
@@ -1479,7 +1494,8 @@ RETURN
     _Resultado
 ```
 
-## Medidas de Ticket Médio
+## 🎟 Medidas de Ticket Médio
+[← Topo](#documentação-das-medidas)
 <br>
 
 ```DAX
@@ -2087,7 +2103,8 @@ RETURN
     )
 ```
 
-## Medidas de Classificação
+## 🏆 Medidas de Classificação
+[← Topo](#documentação-das-medidas)
 <br>
 
 ```DAX
@@ -2905,3 +2922,6 @@ VAR _Resultado =
 RETURN
     _Resultado
 ```
+<br>
+
+[← Voltar ao Projeto](https://github.com/clyntonboss/power-bi-vendas-veloura-beauty)
